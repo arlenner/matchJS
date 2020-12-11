@@ -78,6 +78,7 @@ const union = (name, constructors) => {
     }
     
     T[tag] = (...args) => new result(...args)
+    T[tag].prototype = result.prototype
   })
   register_type(name, tags)
   return T
