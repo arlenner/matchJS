@@ -43,18 +43,6 @@ Object.prototype[MATCH] = function(pattern) {
 }
 function err(e) { throw new Error(e) } //helper 
 
-const extend = (t, ...exts) => {
-  exts.forEach(ext => {
-    entries(ext).forEach(([k,v]) => {
-      k === 'prototype' ? t[k] = v
-    : /*else*/            defprop(t, k, property(ext, k))
-    })
-    symbols(ext).forEach(s => {
-      defprop(t, s, property(ext, s))
-    })
-  })
-}
-
 function Matchable(type, tag, pvt) {
   this[TAG] = tag
   this[TYPE] = type
