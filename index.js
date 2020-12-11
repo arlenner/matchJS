@@ -7,7 +7,6 @@ const property    = Object.getOwnPropertyDescriptor,
 const TAG    = Symbol.for('tag-sym'),
       TYPE   = Symbol.for('type-sym'),
       MATCH  = Symbol.for('match-sym'),
-      SECRET = Symbol.for('secret'),
       WILD   = '_'
 
 const REGISTERED_TYPES = {}
@@ -46,24 +45,24 @@ function err(e) { throw new Error(e) } //helper
 function Matchable(type, tag, pvt) {
   this[TAG] = tag
   this[TYPE] = type
-  this[SECRET] = pvt
-  this[MATCH] = function(pattern) {
+  this[MATCH] = function(pattern, data = null) {
     return (
-      tag in pattern  ? pattern[tag](pvt)
-    : WILD in pattern ? pattern[WILD]()
+      tag in pattern  ? pattern[tag](pvt, data)
+    : WILD in pattern ? pattern[WILD](data)
     : /*else*/         err(`no match found for '${tag}'`)
     )
   }
 }
  
-const match = (instance, pattern) => {
+const match = (instance, pattern, data = null) => {
+  if(!instance) return
   keys(pattern).forEach(k => {
     const T = REGISTERED_TYPES[instance[TYPE]]
     if(!(k in T) && !(k === WILD))
       err(`Pattern provided to match includes keys not in type '${instance[TYPE]}'`)
   })
   if(!instance[TAG]) err('no TAG symbol in instance')
-  return instance[MATCH](pattern)
+  return instance[MATCH](pattern, data)
 }
 
 const union = (name, constructors) => {
